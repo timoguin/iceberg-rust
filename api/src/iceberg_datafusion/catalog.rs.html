@@ -117,8 +117,7 @@
 <span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span>datafusion::catalog::schema::SchemaProvider;
-<span class="kw">use </span>datafusion::catalog::CatalogProvider;
+<span class="kw">use </span>datafusion::catalog::{CatalogProvider, SchemaProvider};
 <span class="kw">use </span>futures::future::try_join_all;
 <span class="kw">use </span>iceberg::{Catalog, NamespaceIdent, <span class="prelude-ty">Result</span>};
 
@@ -129,6 +128,7 @@
 ///
 /// Acts as a centralized catalog provider that aggregates
 /// multiple [`SchemaProvider`], each associated with distinct namespaces.
+</span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>IcebergCatalogProvider {
     <span class="doccomment">/// A `HashMap` where keys are namespace names
     /// and values are dynamic references to objects implementing the

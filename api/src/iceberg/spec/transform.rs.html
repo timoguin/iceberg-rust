@@ -691,6 +691,69 @@
 <a href="#691" id="691">691</a>
 <a href="#692" id="692">692</a>
 <a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -723,6 +786,7 @@
     SetExpression, UnaryExpression,
 };
 <span class="kw">use </span><span class="kw">crate</span>::spec::datatypes::{PrimitiveType, Type};
+<span class="kw">use </span><span class="kw">crate</span>::spec::Literal;
 <span class="kw">use </span><span class="kw">crate</span>::transform::{create_transform_function, BoxedTransformFunction};
 <span class="kw">use </span><span class="kw">crate</span>::ErrorKind;
 
@@ -826,6 +890,27 @@
 }
 
 <span class="kw">impl </span>Transform {
+    <span class="doccomment">/// Returns a human-readable String representation of a transformed value.
+    </span><span class="kw">pub fn </span>to_human_string(<span class="kw-2">&amp;</span><span class="self">self</span>, field_type: <span class="kw-2">&amp;</span>Type, value: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Literal&gt;) -&gt; String {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(value) = value {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(value) = value.as_primitive_literal() {
+                <span class="kw">let </span>field_type = field_type.as_primitive_type().unwrap();
+                <span class="kw">let </span>datum = Datum::new(field_type.clone(), value);
+                <span class="kw">match </span><span class="self">self </span>{
+                    <span class="self">Self</span>::Identity =&gt; datum.to_string(),
+                    <span class="self">Self</span>::Void =&gt; <span class="string">"null"</span>.to_string(),
+                    <span class="kw">_ </span>=&gt; {
+                        <span class="macro">todo!</span>()
+                    }
+                }
+            } <span class="kw">else </span>{
+                <span class="string">"null"</span>.to_string()
+            }
+        } <span class="kw">else </span>{
+            <span class="string">"null"</span>.to_string()
+        }
+    }
+
     <span class="doccomment">/// Get the return type of transform given the input type.
     /// Returns `None` if it can't be transformed.
     </span><span class="kw">pub fn </span>result_type(<span class="kw-2">&amp;</span><span class="self">self</span>, input_type: <span class="kw-2">&amp;</span>Type) -&gt; <span class="prelude-ty">Result</span>&lt;Type&gt; {
@@ -852,6 +937,8 @@
                         | PrimitiveType::Time
                         | PrimitiveType::Timestamp
                         | PrimitiveType::Timestamptz
+                        | PrimitiveType::TimestampNs
+                        | PrimitiveType::TimestamptzNs
                         | PrimitiveType::String
                         | PrimitiveType::Uuid
                         | PrimitiveType::Fixed(<span class="kw">_</span>)
@@ -888,11 +975,33 @@
                     ))
                 }
             }
-            Transform::Year | Transform::Month | Transform::Day =&gt; {
+            Transform::Year | Transform::Month =&gt; {
                 <span class="kw">if let </span>Type::Primitive(p) = input_type {
                     <span class="kw">match </span>p {
                         PrimitiveType::Timestamp
                         | PrimitiveType::Timestamptz
+                        | PrimitiveType::TimestampNs
+                        | PrimitiveType::TimestamptzNs
+                        | PrimitiveType::Date =&gt; <span class="prelude-val">Ok</span>(Type::Primitive(PrimitiveType::Int)),
+                        <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(Error::new(
+                            ErrorKind::DataInvalid,
+                            <span class="macro">format!</span>(<span class="string">"{input_type} is not a valid input type of {self} transform"</span>,),
+                        )),
+                    }
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">Err</span>(Error::new(
+                        ErrorKind::DataInvalid,
+                        <span class="macro">format!</span>(<span class="string">"{input_type} is not a valid input type of {self} transform"</span>,),
+                    ))
+                }
+            }
+            Transform::Day =&gt; {
+                <span class="kw">if let </span>Type::Primitive(p) = input_type {
+                    <span class="kw">match </span>p {
+                        PrimitiveType::Timestamp
+                        | PrimitiveType::Timestamptz
+                        | PrimitiveType::TimestampNs
+                        | PrimitiveType::TimestamptzNs
                         | PrimitiveType::Date =&gt; <span class="prelude-val">Ok</span>(Type::Primitive(PrimitiveType::Date)),
                         <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(Error::new(
                             ErrorKind::DataInvalid,
@@ -909,9 +1018,10 @@
             Transform::Hour =&gt; {
                 <span class="kw">if let </span>Type::Primitive(p) = input_type {
                     <span class="kw">match </span>p {
-                        PrimitiveType::Timestamp | PrimitiveType::Timestamptz =&gt; {
-                            <span class="prelude-val">Ok</span>(Type::Primitive(PrimitiveType::Int))
-                        }
+                        PrimitiveType::Timestamp
+                        | PrimitiveType::Timestamptz
+                        | PrimitiveType::TimestampNs
+                        | PrimitiveType::TimestamptzNs =&gt; <span class="prelude-val">Ok</span>(Type::Primitive(PrimitiveType::Int)),
                         <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(Error::new(
                             ErrorKind::DataInvalid,
                             <span class="macro">format!</span>(<span class="string">"{input_type} is not a valid input type of {self} transform"</span>,),
@@ -1266,14 +1376,30 @@
                     | PredicateOperator::LessThanOrEq
                     | PredicateOperator::In =&gt; {
                         <span class="kw">if </span>v &lt; <span class="number">0 </span>{
-                            <span class="kw">return </span><span class="prelude-val">Some</span>(AdjustedProjection::Single(Datum::int(v + <span class="number">1</span>)));
+                            <span class="comment">// # TODO
+                            // An ugly hack to fix. Refine the increment and decrement logic later.
+                            </span><span class="kw">match </span><span class="self">self </span>{
+                                Transform::Day =&gt; {
+                                    <span class="kw">return </span><span class="prelude-val">Some</span>(AdjustedProjection::Single(Datum::date(v + <span class="number">1</span>)))
+                                }
+                                <span class="kw">_ </span>=&gt; {
+                                    <span class="kw">return </span><span class="prelude-val">Some</span>(AdjustedProjection::Single(Datum::int(v + <span class="number">1</span>)));
+                                }
+                            }
                         };
                     }
                     PredicateOperator::Eq =&gt; {
                         <span class="kw">if </span>v &lt; <span class="number">0 </span>{
                             <span class="kw">let </span>new_set = FnvHashSet::from_iter(<span class="macro">vec!</span>[
                                 transformed.to_owned(),
-                                Datum::int(v + <span class="number">1</span>),
+                                <span class="comment">// # TODO
+                                // An ugly hack to fix. Refine the increment and decrement logic later.
+                                </span>{
+                                    <span class="kw">match </span><span class="self">self </span>{
+                                        Transform::Day =&gt; Datum::date(v + <span class="number">1</span>),
+                                        <span class="kw">_ </span>=&gt; Datum::int(v + <span class="number">1</span>),
+                                    }
+                                },
                             ]);
                             <span class="kw">return </span><span class="prelude-val">Some</span>(AdjustedProjection::Set(new_set));
                         }
