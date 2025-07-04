@@ -64,10 +64,7 @@ pub use error::{Error, ErrorKind, Result};
 
 mod catalog;
 
-pub use catalog::{
-    Catalog, Namespace, NamespaceIdent, TableCommit, TableCreation, TableIdent, TableRequirement,
-    TableUpdate, ViewCreation,
-};
+pub use catalog::*;
 
 pub mod table;
 
@@ -87,6 +84,7 @@ mod runtime;
 
 pub mod arrow;
 pub(crate) mod delete_file_index;
+pub mod test_utils;
 mod utils;
 pub mod writer;
 
